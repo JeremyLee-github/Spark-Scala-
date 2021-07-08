@@ -20,8 +20,8 @@ object HanLPTest {
     println(HanLP.segment(cleanWords1).asScala.map(_.word))
 
     val log = """00:00:00	2982199073774412	[360安全卫士]	8 3	download.it.com.cn/softweb/software/firewall/antivirus/20067/17938.html"""
-    val cleanWords2 = log.split("\\s+")(2)       //[360安全卫士]
-      .replaceAll("\\[|\\]","")      //360安全卫士
+    val cleanWords2 = log.split("\\s+")(2)       //[360安全衛士]
+      .replaceAll("\\[|\\]","")      //360安全衛士
     println(cleanWords2)
     println(HanLP.segment(cleanWords2).asScala.map(_.word))
 
