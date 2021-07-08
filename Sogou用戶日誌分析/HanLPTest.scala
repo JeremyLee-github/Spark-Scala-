@@ -4,14 +4,6 @@ import com.hankcs.hanlp.HanLP
 import com.hankcs.hanlp.seg.common.Term
 
 import java.util
-/*
-        <!--HanLP 依賴-->
-        <dependency>
-            <groupId>com.hankcs</groupId>
-            <artifactId>hanlp</artifactId>
-            <version>portable-1.7.7</version>
-        </dependency>
- */
 
 object HanLPTest {
   def main(args: Array[String]): Unit = {
