@@ -36,7 +36,7 @@ object SougouLogAnalysis {
     //TODO 統計分析
     //--1.熱門搜索關鍵字統計
     val result1: Array[(String, Int)] = wordsRDD
-      .filter(word => !word.equals(".") && !word.equals("+"))  // 將數據內"."跟"+"去除!!
+      .filter(word => !".".equals(word) && !"+".equals(word))  // 將數據內"."跟"+"去除!!
       .map(_ -> 1)
       .reduceByKey(_ + _)
       .sortBy(_._2, false)
