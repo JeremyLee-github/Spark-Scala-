@@ -49,7 +49,7 @@ object WordCount06 {
       //輸出到控制台
       rdd.foreach(println)
       //自定義輸出到指定路徑:HDFS
-      rdd.coalesce(1).saveAsTextFile("./data/output/"+milliseconds)
+      rdd.coalesce(1).saveAsTextFile("HDFS路徑地址"+milliseconds)
       //輸出到MySQL
       rdd.foreachPartition(iter=>{
         //開啟連接
