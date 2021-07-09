@@ -56,7 +56,7 @@ object SparkStreaming_Kafka_Demo01 {
     ssc.start()
     ssc.awaitTermination()
 
-    // 優雅關閉
+    // 關閉
     ssc.stop(true,true)
 
   }
