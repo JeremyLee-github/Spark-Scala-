@@ -75,9 +75,9 @@ object WordCount06 {
 
     //啟動並等待結束
     ssc.start()
-    ssc.awaitTermination() //注意:流式應用程序啟動之後需要一直運行等待手動停止OR等待數據到來
+    ssc.awaitTermination() 
 
     //關閉資源
-    ssc.stop(stopSparkContext = true, stopGracefully = true) //優雅關閉!!
+    ssc.stop(stopSparkContext = true, stopGracefully = true) 
   }
 }
