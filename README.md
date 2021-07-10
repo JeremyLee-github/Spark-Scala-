@@ -7,24 +7,24 @@
 - 1.用戶日誌分析(HanLP)
   - 透過 SougouLog網站後台的點擊資料搭配HanLP套件進行分詞,個別統計出"熱門搜索關鍵字統計","用戶熱門搜索詞","各個時間段搜索熱度統計"三種分析數據進行輸出分析
   
-        RDD(數據輸入)⇒.map()(包裝數據資料)⇒.flatMap()(使用HanLP進行分詞)⇒.reduceByKey()⇒.sortBy()(排序)⇒.take(10)(取出前10筆資料)⇒數據分析輸出
+    RDD(數據輸入) ⇒ .map()(包裝數據資料) ⇒ .flatMap()(使用HanLP進行分詞) ⇒ .reduceByKey() ⇒ .sortBy()(排序) ⇒ .take(10)(取出前10筆資料) ⇒ 數據分析輸出
     
 - 2.及時數據處理
   - 將即時數據透過滑動動窗口進行數據分割,再取出前3排名,透過自定義輸出進行打印或存入數據庫(HDFSorMySQL)
   
-        SparkStream(數據輸入)⇒.reduceByKeyAndWindow()滑動窗口⇒.transform()轉成底層RDD進行排序處理⇒.take(3)(取出前3筆資料)⇒數據分析自定義輸出(HDFS&MSQL)
+    SparkStream(數據輸入) ⇒ .reduceByKeyAndWindow()滑動窗口 ⇒ .transform()轉成底層RDD進行排序處理⇒.take(3)(取出前3筆資料) ⇒ 數據分析自定義輸出(HDFS&MSQL)
 
 - 3.電影評分數據分析
 
   - 對電影評分數據進行統計分析,獲取電影平均分TOP10,要求電影評分次數大於200
  
-        SparkSession(數據輸入)⇒Dataset轉DataFrame⇒使用SparkSQL跟DSL進行數據分析排序處理(取出前10筆資料)⇒數據分析輸出
+    SparkSession(數據輸入) ⇒ Dataset轉DataFrame ⇒ 使用SparkSQL跟DSL進行數據分析排序處理(取出前10筆資料) ⇒   數據分析輸出
 
 - 4.電信基地台數據即時ETL(整合Kafka)
 
   - 透過Structured Streaming將Kafka數據源進行ETL,在將清理的數據輸出回Kafka
   
-    Kafak stationTopic => Structured Streaming(ETL數據) => Kafka etlTopic
+    Kafak stationTopic ⇒ Structured Streaming(ETL數據) ⇒ Kafka etlTopic
 
 - 5.智能物聯網後台設備統計數據分析
     
@@ -34,7 +34,7 @@
     (2) 各種設備類型的數量
     (3) 各種設備類型的平均訊號強度
     
-    Kafak iotTopic => Structured Streaming(使用SparkSQL內痔函數解析Json數據) => 使用DSL跟SparkSQL數據分析 => 分析數據輸出
+    Kafak iotTopic ⇒ Structured Streaming(使用SparkSQL內痔函數解析Json數據) ⇒ 使用DSL跟SparkSQL數據分析 ⇒ 分析數據輸出
 
 - 6.線上學習平台學習數據分析與即時推薦系統 
 
