@@ -1,4 +1,4 @@
-# Spark-Scala-
+# Spark 3.0.1-Scala-
 使用Scala操作Spark
 
 透過Spark使用分佈式數據集(RDD)經由SparkStream搭配DSL或SparkSQL將數據庫(MySQL,redis,Kafak,K8s)或大數據資料庫(Hive,HDFS,HBase),搭配SparkML進行數據資料清洗與建模,分析數據資料輸出分析數據,或是使用StructedStream整合Kafka搭配WaterMark進行即時數據分析,再透過SparkML進行數據清理(ETL)與ALS建立model,經由ALS即時輸出推薦項目,提供給使用者分析
