@@ -47,4 +47,6 @@
                               SparkStreaming即時推薦
                                       ||
                                       \/
--                         Redis(ALS-model在HDFS的儲存路徑)  < = >   ALS推薦算法模型(存放在HDFS)
+                           Redis(ALS-model在HDFS的儲存路徑)  < = >   ALS推薦算法模型(存放在HDFS)
+                           
+- 7. 
