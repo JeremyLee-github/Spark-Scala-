@@ -59,24 +59,6 @@ object BatchAnalysis {
       .orderBy('hotCount.desc)
 
     //需求二:各科目推薦題目分析 (找到TOP20熱門題目對應的推薦題目,然後找到推薦題目對應的科目,並統計每個科目分別包含推薦題目的個數)
-    /*
-    題號 熱度
-    1    10
-    2     9
-    題號  熱度  推薦題
-    1    10   2,3,4
-    2     9   3,4,5
-    推薦題   科目
-    2       數學
-    3       數學
-    4       物理
-    5       化學
-    科目   推薦題目數量
-    數學     5
-    數學     4
-    物理     3
-    化學     1
-     */
     //TODO ===DSL
     //1.統計TOP20熱門題目--子查詢t1
     val hotTOP20: Dataset[Row] = allInfoDF.groupBy('question_id).agg(count('question_id) as "hot_question_count")
