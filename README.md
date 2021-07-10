@@ -28,17 +28,19 @@
 - 5.智能物聯網後台設備統計數據分析
     
   - 產生設備數據到Kafka,Structured Streaming即時統計消費數據,對網站設備訊號即時統計分析
+  
     (1) 訊號強度大於30的設備
     (2) 各種設備類型的數量
     (3) 各種設備類型的平均訊號強度
     
     Kafak iotTopic => Structured Streaming(使用SparkSQL內痔函數解析Json數據) => 使用DSL跟SparkSQL數據分析 => 分析數據輸出
 
-6. 線上學習平台學習數據分析與即時推薦系統 
+- 6.線上學習平台學習數據分析與即時推薦系統 
 
     (1) 即時分析學生答題狀況
     (2) 即時推薦易錯題給學生(SparkML-ALS推薦算法)
     (3) 離線分析學生學習狀況
+    
 
                             StructuredStreaming即時分析
     學生學習數據(Kafka) =>                               => 即時分析推薦結果(存放MySQL/HBase) => SparkSQL離線分析
