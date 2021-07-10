@@ -1,7 +1,7 @@
 # Spark 3.0.1-Scala-
 使用Scala操作Spark
 
-透過Spark使用分佈式數據集(RDD)經由SparkStream搭配滾動窗口或滑動窗口將即時數據進行處理分析,再存入數據庫(MySQL,redis,Kafak,HDFS)或直接輸出數據進行比對分析,或是使用StructedStream整合Kafka經由WaterMark(Event Time)配合DSL或SparkSQL進行即時數據分析,再透過SparkML進行數據清理(ETL)與ML或ALS建立model,經由ALS即時輸出推薦項目,提供給使用者
+透過Spark使用分佈式數據集(RDD)經由SparkStream搭配滾動窗口或滑動窗口將即時數據進行處理分析,再存入數據庫(MySQL,redis,Kafak,HDFS)或直接輸出數據進行比對分析,或是使用StructedStream整合Kafka經由WaterMark(Event Time)配合DSL或SparkSQL進行即時數據分析,再透過SparkML進行數據清理(ETL)與ML或ALS建立model,經由ALS即時輸出推薦項目,提供給使用者分析預測
 
 - 1.用戶日誌分析(HanLP)
   - 透過 SougouLog網站後台的點擊資料搭配HanLP套件進行分詞,個別統計出"熱門搜索關鍵字統計","用戶熱門搜索詞","各個時間段搜索熱度統計"三種分析數據進行輸出分析
