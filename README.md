@@ -43,11 +43,11 @@
     (3) 離線分析學生學習狀況
     
 
-   -                          StructuredStreaming即時分析
+                             StructuredStreaming即時分析
       學生學習數據(Kafka) =>                               => 即時分析推薦結果(存放MySQL/HBase) => SparkSQL離線分析
                               SparkStreaming即時推薦
-   -                                  ||
-   -                                  \/
-   -                          Redis(存放ALS-model在HDFS的儲存路徑)  < = >   ALS推薦算法模型(存放在HDFS)
+                                     ||
+                                     \/
+                             Redis(存放ALS-model在HDFS的儲存路徑)  < = >   ALS推薦算法模型(存放在HDFS)
                            
 - 7.預測
