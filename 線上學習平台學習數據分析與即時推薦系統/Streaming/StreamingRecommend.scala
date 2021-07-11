@@ -26,7 +26,7 @@ object StreamingRecommend {
     import spark.implicits._
     import org.apache.spark.sql.functions._
 
-    //加載數據
+    //加載數據(SparkStream連接Kafka)
     val kafkaParams = Map[String,Object](
       "bootstrap.servers" -> "node1:9092",            //kafka集群地址
       "key.deserializer" -> classOf[StringDeserializer],      //key反序列化規則
@@ -40,55 +40,85 @@ object StreamingRecommend {
       "enable.auto.commit" -> (true: java.lang.Boolean)       //是否自動提交
     )
     val topics = Array("edu") //訂閱的topic
+
     //使用工具類從kafka中獲取消息!!!
-    val kafkaDS: InputDStream[ConsumerRecord[String, String]] = KafkaUtils.createDirectStream[String, String](
+    //讀取數據
+    val kafkaDStream: InputDStream[ConsumerRecord[String, String]] = KafkaUtils.createDirectStream[String, String](
       ssc,
       LocationStrategies.PreferConsistent, //位子策略(使用源碼中推薦)
       ConsumerStrategies.Subscribe[String, String](topics, kafkaParams) //消費策略(使用源碼中推薦)
     )
 
-    //處理數據
-    val valueDStream: DStream[String] = kafkaDS.map(record => {
+    //處理數據(從Kafka中取出value)
+    val valueDStream: DStream[String] = kafkaDStream.map(record => {
       record.value()
     })
+    //{"student_id":"學生ID_53","textbook_id":"教材ID_3","grade_id":"年級ID_3","subject_id":"科目ID_3_英語",..........}
+    //從每個RDD分區自行取出模型進行推薦運算
     valueDStream.foreachRDD(rdd=>{
-      if(!rdd.isEmpty()){
+      if(!rdd.isEmpty()){ // RDD有值才進行處理
+
+        //TODO 1.獲取path並加載模型
         //該rdd表示每次微批獲取的數據
         //取的redis連接
-        val jedis: Jedis = RedisUtil.pool.getResource
+        val jedis: Jedis = RedisUtil.pool.getResource // 使用RedisUtil裡面的線程池函數
         //加載模型路徑
         //jedis.hset("als_model", "recommended_question_id", path)
         val path: String = jedis.hget("als_model", "recommended_question_id")
         //根據路徑加載模型
         val model: ALSModel = ALSModel.load(path)
-        //取出用戶ID(使用new Gson()套入Answer樣例類進行轉換!!!)
-        val answerDF: DataFrame = rdd.coalesce(1).map(jsonStr => {
+
+        //TODO 2.取出用戶ID
+        //(使用new Gson()套入Answer樣例類進行轉換!!!)
+        val answerDF: DataFrame = rdd.coalesce(1)  // 把每一個RDD設定為一個分區
+          .map(jsonStr => {
           val gson: Gson = new Gson()
           gson.fromJson(jsonStr, classOf[Answer])
         }).toDF()
-        //將用戶名稱作切分取出ID號
+        //創造一個UDF,將用戶名稱作切分取出ID號(使用ALS模型推薦時只能使用Int輸入)
         val id2int = udf((student_id:String)=>{
           student_id.split("_")(1).toInt
         })
-        val studentIdDF: DataFrame = answerDF.select(id2int('student_id) as "student_id")
-        //使用模型做預測
+        val studentIdDF: DataFrame = answerDF.select(id2int('student_id) as "student_id")  // 將student_id轉為Int
+
+        //TODO 3.使用模型做預測(針對每個學生推薦10道題目)
         val recommendDF: DataFrame = model.recommendForUserSubset(studentIdDF, 10)
         recommendDF.printSchema()
-        recommendDF.show(false)
-        //處理推薦數據
+        /*
+        root
+        |-- student_id: integer (nullable = false)
+        |-- recommendations: array (nullable = true)
+        |    |-- element: struct (containsNull = true)
+        |    |    |-- question_id: integer (nullable = true)
+        |    |    |-- rating: float (nullable = true)
+         */
+        recommendDF.show(false) // false => 不截斷全部顯示
+        /*
+        +----------+-------------------------------------------------------------------------------------------
+        |student_id|recommendations
+        +----------+-------------------------------------------------------------------------------------------
+        |12        |[1707, 2.900552], [641, 2.8934805], [815, 2.893480], [1583, 2.8934805], [1585, 2.8774242],
+        |14        |[1627, 2.892552], [441, 2.8925943], [1951, 2.8925943], [1412, 2.8925933], [1812, 2.8832122],
+         */
+        //處理推薦數據: 取出學生ID和題目ID "id1,id2,id3,........"
         val recommendResultDF: DataFrame = recommendDF.as[(Int, Array[(Int, Float)])].map(t => {
           val studentIDstr: String = "學生ID_" + t._1
-          val questionIDstr: String = t._2.map(_._2).mkString(",") //mkString(",")=>將字符用","拼接
+          val questionIDstr: String = t._2.map("題目ID_"+_._1).mkString(",") //mkString(",")=>將字符用","拼接
           (studentIDstr, questionIDstr)
         }).toDF("student_id", "recommendations")
-        //將answerDF和recommendResultDF進行連接
-        val allInfoDF: DataFrame = answerDF.join(recommendDF, "student_id")  //使用"student_id"當作keyID進行連接!!!
-        //將數據儲存到MySQL/HBase中
+        //將answerDF和recommendResultDF進行連接(將原本數據answerDF跟預測數據recommendResultDF進行連接)
+        val allInfoDF: DataFrame = answerDF.join(recommendResultDF, "student_id")  //使用"student_id"當作keyID進行連接!!!
+
+        //TODO 4.將數據儲存到MySQL/HBase中
         if(allInfoDF.count()>0){
           val properties: Properties = new Properties()
           properties.setProperty("user","root")
           properties.setProperty("password","root")
-          allInfoDF.write.mode(SaveMode.Append).jdbc(
+
+          allInfoDF
+            .write                 // 這裡是使用SparkStream (StructuredStreaming=>writeStream)
+            .mode(SaveMode.Append)
+            .jdbc(
             "jdbc:mysql://localhost:3306/edu?useUnicode=true&characterEncoding=utf8",
             "t_recommended", properties)
         }
